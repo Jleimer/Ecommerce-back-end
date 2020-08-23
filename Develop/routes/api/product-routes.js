@@ -26,7 +26,7 @@ router.get('/', (req, res) => {
 
 // get one product
 router.get('/:id', (req, res) => {
-  Product.findAll({
+  Product.findOne({
     where: {
       id: req.params.id
     },
@@ -123,7 +123,23 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value
+  Product.destroy({
+    where: {
+      id: req.params.id
+    }
+  })
+    .then(products => {
+      if (!products) {
+        res.status(404).json({ message: 'No post found with this id' });
+        return;
+      }
+      res.json(products);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
+
 
 module.exports = router;
