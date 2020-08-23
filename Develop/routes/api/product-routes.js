@@ -5,23 +5,23 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 
 // get all products
 router.get('/', (req, res) => {
-  Product.findAll({
-    attributes: [
-      'id',
-      'product_name',
-      'price',
-      'stock'
-
-    ],
+  console.log("hello")
+ Product.findAll({
     include: [
       {
-        model: Category
+        model: Category, 
+        attributes: ["id", "category_name"]
       },
        {
-        model: Tag
+        model: Tag,
+        attributes: ['id', 'tag_name'],
+        through: ProductTag,
+        as: "tagged_products"
        }
     ]
-  })
+  }).then(products => {
+    res.json(products);
+ })
 });
 
 // get one product
@@ -30,33 +30,33 @@ router.get('/:id', (req, res) => {
     where: {
       id: req.params.id
     },
-    attributes: [
-      'id',
-      'product_name',
-      'price',
-      'stock'
-
-    ],
     include: [
       {
-        model: Category
+        model: Category, 
+        attributes: ["id", "category_name"]
       },
        {
-        model: Tag
+        model: Tag,
+        attributes: ['id', 'tag_name'],
+        through: ProductTag,
+        as: "tagged_products"
        }
     ]
-  })
+  }).then(products => {
+    res.json(products);
+ })
 });
+
 
 // create new product
 router.post('/', (req, res) => {
-  Product.create(
-    {
-      product_name: req.body.product_name,
-      price: req.body.price,
-      stock: req.body.stock,
-      tagIds: req.body.tagIds
-    })
+  // Product.create(
+  //   {
+  //     product_name: req.body.product_name,
+  //     price: req.body.price,
+  //     stock: req.body.stock,
+  //     tagIds: req.body.tagIds
+  //   })
 
   Product.create(req.body)
     .then((product) => {

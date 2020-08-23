@@ -5,11 +5,20 @@ const { Tag, Product, ProductTag } = require('../../models');
 
 router.get('/', (req, res) => {
   Tag.findAll({
-    include: [Product]
-  }).then(Tag => {
-    res.json(Tag);
+    include: [
+      {
+        model: Product,
+        attributes: ['id', 'product_name', 'price', 'stock', 'category_id'],
+        through: ProductTag,
+        as: 'product_tags'
+      }
+    ]
   })
-  
+  .then(dbTagData => res.json(dbTagData))
+  .catch((err) => {
+    console.log(err);
+    res.status(400).json(err);
+  })
 });
 
 router.get('/:id', (req, res) => {
@@ -17,12 +26,22 @@ router.get('/:id', (req, res) => {
     where: {
       id: req.params.id
     },
-    include: [Product]
-  }).then(Tag => {
-    res.json(Tag);
+    include: [
+      {
+        model: Product,
+        attributes: ['id', 'product_name', 'price', 'category_id'],
+        through: ProductTag,
+        as: 'product_tags'
+      }
+    ]
   })
-  
+  .then(dbTagData => res.json(dbTagData))
+  .catch((err) => {
+    console.log(err);
+    res.status(400).json(err);
+  })
 });
+  
 
 router.post('/', (req, res) => {
   Tag.create(req.body).then(Tag => {
